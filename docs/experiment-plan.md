@@ -23,3 +23,24 @@ time, CPU/RAM use, and caption examples on the fixed validation split.
 | T3 | Gradient accumulation versus direct updates | Measures memory and time trade-off |
 
 Do not claim results for T1-T3 until their logs and validation outputs exist.
+
+## Observed CPU pilot: T1 smoke test
+
+| Measurement | Result |
+| --- | --- |
+| Training examples | 25 |
+| Epochs | 1 |
+| Learning rate | 1e-5 |
+| Caption token limit | 96 |
+| Frozen component | BLIP visual encoder |
+| Trainable parameters | 137,881,148 |
+| Initial training loss | 5.2700 |
+| Final training loss | 4.1453 |
+| Mean training loss | 4.4930 |
+| Total time | 70.78 seconds |
+| Mean step time | 2.83 seconds |
+
+The run confirms that the disk-conscious ZIP data path and frozen-encoder
+training configuration work on CPU. This short pilot shows a lower final loss,
+but it is not enough to claim an improvement in caption quality; validation
+captions must be generated from saved fine-tuned weights first.

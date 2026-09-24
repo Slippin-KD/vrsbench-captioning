@@ -68,7 +68,8 @@ python scripts/train_pilot.py --max-samples 25
 ```
 
 The pilot freezes BLIP's pretrained visual encoder and trains the language
-generation component. It records loss and runtime in `reports/pilot_training.json`.
+generation component. It records loss and runtime in `reports/pilot_training.json`
+and saves the trainable parameter state under `checkpoints/` for validation.
 
 ## Experiment reporting
 

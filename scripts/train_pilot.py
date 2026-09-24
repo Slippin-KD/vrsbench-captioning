@@ -52,6 +52,12 @@ def main() -> None:
     parser.add_argument(
         "--output", type=Path, default=Path("reports/pilot_training.json")
     )
+    parser.add_argument(
+        "--checkpoint",
+        type=Path,
+        default=Path("checkpoints/pilot_trainable_state.pt"),
+        help="Path for the trained, non-frozen parameter state.",
+    )
     args = parser.parse_args()
 
     examples = load_examples(args.manifest, args.max_samples)
@@ -107,6 +113,13 @@ def main() -> None:
                     )
 
     elapsed = time.perf_counter() - started
+    args.checkpoint.parent.mkdir(parents=True, exist_ok=True)
+    trainable_state = {
+        name: parameter.detach().cpu()
+        for name, parameter in model.named_parameters()
+        if parameter.requires_grad
+    }
+    torch.save(trainable_state, args.checkpoint)
     report = {
         "examples": len(examples),
         "epochs": args.epochs,
@@ -119,11 +132,13 @@ def main() -> None:
         "mean_loss": sum(losses) / len(losses),
         "elapsed_seconds": elapsed,
         "seconds_per_step": elapsed / len(losses),
+        "checkpoint": str(args.checkpoint),
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(report, indent=2))
     print(f"Saved report to {args.output}")
+    print(f"Saved trained parameter state to {args.checkpoint}")
 
 
 if __name__ == "__main__":
