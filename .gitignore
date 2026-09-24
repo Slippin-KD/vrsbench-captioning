@@ -1,0 +1,23 @@
+# Local Python environment and model cache
+.venv/
+.cache/
+__pycache__/
+*.py[cod]
+
+# Downloaded VRSBench files and derived dataset artifacts
+data/downloads/
+data/Annotations_train/
+data/__MACOSX/
+data/raw/
+data/train/
+data/processed/*.jsonl
+
+# Generated artifacts that can be reproduced
+checkpoints/
+*.pt
+*.pth
+*.safetensors
+
+# Editor and operating system files
+.vscode/
+.DS_Store
