@@ -1,0 +1,26 @@
+{
+  "candidate_file": "reports/lora_tuned_predictions.jsonl",
+  "candidate_metrics": {
+    "bleu_1": 10.96,
+    "bleu_2": 5.68,
+    "bleu_3": 2.1,
+    "bleu_4": 1.09,
+    "rouge_l": 22.95,
+    "bert_score_f1": 22.31,
+    "bert_score_precision": 36.01,
+    "bert_score_recall": 9.17
+  },
+  "candidate_mean_seconds": 0.448,
+  "baseline_file": "reports/baseline_predictions.jsonl",
+  "baseline_metrics": {
+    "bleu_1": 6.58,
+    "bleu_2": 2.83,
+    "bleu_3": 1.05,
+    "bleu_4": 0.63,
+    "rouge_l": 14.43,
+    "bert_score_f1": 13.67,
+    "bert_score_precision": 24.69,
+    "bert_score_recall": 3.05
+  },
+  "baseline_mean_seconds": 2.513
+}
