@@ -21,6 +21,28 @@ Evaluation is executed via:
 python scripts/evaluate_metrics.py --candidate reports/optimized_predictions.jsonl --baseline reports/baseline_predictions.jsonl
 ```
 
+### Current exploratory comparison: baseline versus LoRA
+
+The following comparison uses the five fixed validation images in
+`reports/baseline_predictions.jsonl` and `reports/lora_tuned_predictions.jsonl`.
+It is an exploratory comparison for selecting the next full validation run;
+it is not a final score over all 9,350 validation images.
+
+| Metric | BLIP baseline (B0) | LoRA tuned | Change |
+| :--- | ---: | ---: | ---: |
+| BLEU-4 | 0.63 | 1.09 | +0.46 |
+| BERTScore precision | 24.69 | 36.01 | +11.32 |
+| BERTScore recall | 3.05 | 9.17 | +6.12 |
+| BERTScore F1 | 13.67 | 22.31 | +8.64 |
+| **BERT-BLEU4** | **2.93** | **4.93** | **+2.00** |
+| Mean inference latency (seconds/image) | 2.51 | 0.45 | -2.06 |
+
+`BERT-BLEU4 = sqrt(BERTScore F1 x BLEU-4)`, with both input metrics on a
+0-100 scale. This project-defined composite balances semantic similarity with
+four-gram overlap. The BERTScore values are retained from the original
+evaluation run, and `scripts/evaluate_metrics.py` remains the reproducible
+path for future BERTScore calculations.
+
 ---
 
 ## 2. Systematic Optimization Matrix

@@ -78,6 +78,10 @@ The experiment plan and the currently observed baseline are in
 will include its configuration, elapsed time, resource observations, training
 loss, and generated validation captions.
 
+The current five-image exploratory comparison reports BERTScore F1, BLEU-4,
+and the project-defined BERT-BLEU4 composite. See the experiment plan for its
+values, formula, and evaluation scope.
+
 ## Repository layout
 
 ```text
