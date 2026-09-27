@@ -12,6 +12,7 @@ Task 1 evaluation is centered on **training-time optimization, systematic ablati
 | **BLEU-1 to BLEU-4** | N-gram lexical precision (unigram to 4-gram) | Modified n-gram precision with brevity penalty & Chen-Cherry smoothing |
 | **ROUGE-L** | Structural sequence overlap | Longest Common Subsequence (LCS) F1-score |
 | **BERTScore F1** | Deep contextual / semantic similarity | Pairwise cosine similarity over contextual token embeddings |
+| **BERT-BLEU4** | Primary combined score | Geometric mean of BERTScore F1 and BLEU-4 after both are scaled to 0-100 |
 | **Peak VRAM (MB)** | Memory footprint efficiency | `torch.cuda.max_memory_allocated()` |
 | **Throughput (samples/s)** | Wall-clock computational efficiency | Total processed dataset examples / total elapsed training time |
 
@@ -80,7 +81,7 @@ python scripts/run_validation.py \
   --checkpoint checkpoints/exp_amp_cosine.pt \
   --output reports/exp_amp_cosine_preds.jsonl
 
-# 6. Quantitative Scoring (BLEU-1..4, ROUGE-L, BERTScore)
+# 6. Quantitative Scoring (BERT-BLEU4, BLEU-1..4, ROUGE-L, BERTScore)
 python scripts/evaluate_metrics.py \
   --candidate reports/exp_amp_cosine_preds.jsonl \
   --baseline reports/baseline_predictions.jsonl

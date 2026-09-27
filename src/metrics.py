@@ -1,5 +1,8 @@
 """Evaluation metrics for image captioning on VRSBench.
-Includes BLEU (1-4), ROUGE-L, and BERTScore with robust fallbacks.
+
+The primary report contains BERTScore F1 and corpus BLEU-4.  ``bert_bleu4``
+is their geometric mean on a common 0-100 scale; it is an explicitly defined
+project composite, not a standard external metric.
 """
 
 from typing import Dict, List, Tuple
@@ -92,8 +95,12 @@ def compute_rouge_l(reference: str, prediction: str) -> float:
     f1 = (2 * prec * rec) / (prec + rec)
     return round(float(f1 * 100), 2)
 
-def evaluate_predictions(records: List[Dict[str, str]], use_bertscore: bool = True) -> Dict[str, float]:
-    """Aggregates BLEU-1..4, ROUGE-L, and BERTScore over a list of records."""
+def evaluate_predictions(
+    records: List[Dict[str, str]],
+    use_bertscore: bool = True,
+    bertscore_model: str = "roberta-large",
+) -> Dict[str, float | str | None]:
+    """Aggregate caption metrics and the documented BERT-BLEU4 composite."""
     if not records:
         return {}
         
@@ -113,19 +120,41 @@ def evaluate_predictions(records: List[Dict[str, str]], use_bertscore: bool = Tr
     metrics = {k: round(v / count, 2) for k, v in bleu_totals.items()}
     metrics["rouge_l"] = round(rouge_total / count, 2)
     
-    # Compute BERTScore if requested and library is available
+    # BERTScore needs contextual encoder weights. A score is never fabricated
+    # when the package or its required model is unavailable.
     if use_bertscore:
         try:
             import bert_score
             P, R, F1 = bert_score.score(
-                predictions, references, lang="en", rescale_with_baseline=True, verbose=False
+                predictions,
+                references,
+                model_type=bertscore_model,
+                lang="en",
+                rescale_with_baseline=True,
+                verbose=False,
             )
             metrics["bert_score_f1"] = round(float(F1.mean().item() * 100), 2)
             metrics["bert_score_precision"] = round(float(P.mean().item() * 100), 2)
             metrics["bert_score_recall"] = round(float(R.mean().item() * 100), 2)
+            metrics["bert_score_model"] = bertscore_model
         except Exception as e:
-            # Fallback when bert-score package or weights are not loaded
             metrics["bert_score_f1"] = None
-            metrics["bert_score_note"] = f"bert_score disabled or uninstalled ({e})"
+            metrics["bert_score_note"] = f"BERTScore was not computed: {e}"
+    else:
+        metrics["bert_score_f1"] = None
+        metrics["bert_score_note"] = "BERTScore was disabled by --no-bertscore."
+
+    # BERT-BLEU4: geometric mean of semantic agreement (BERTScore F1) and
+    # 4-gram agreement (BLEU-4), both reported as percentages.
+    bleu4_val = metrics.get("bleu_4", 0.0)
+    bert_val = metrics.get("bert_score_f1")
+    if isinstance(bert_val, (float, int)):
+        metrics["bert_bleu4"] = round((bleu4_val * bert_val) ** 0.5, 2)
+        metrics["bert_bleu4_definition"] = (
+            "geometric_mean(BERTScore_F1, BLEU-4), both on a 0-100 scale"
+        )
+    else:
+        metrics["bert_bleu4"] = None
+        metrics["bert_bleu4_definition"] = "Unavailable because BERTScore was not computed."
             
     return metrics

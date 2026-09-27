@@ -6,9 +6,10 @@
     "bleu_3": 2.1,
     "bleu_4": 1.09,
     "rouge_l": 22.95,
-    "bert_score_f1": 22.31,
-    "bert_score_precision": 36.01,
-    "bert_score_recall": 9.17
+    "bert_score_f1": null,
+    "bert_score_note": "BERTScore was disabled by --no-bertscore.",
+    "bert_bleu4": null,
+    "bert_bleu4_definition": "Unavailable because BERTScore was not computed."
   },
   "candidate_mean_seconds": 0.448,
   "baseline_file": "reports/baseline_predictions.jsonl",
@@ -18,9 +19,10 @@
     "bleu_3": 1.05,
     "bleu_4": 0.63,
     "rouge_l": 14.43,
-    "bert_score_f1": 13.67,
-    "bert_score_precision": 24.69,
-    "bert_score_recall": 3.05
+    "bert_score_f1": null,
+    "bert_score_note": "BERTScore was disabled by --no-bertscore.",
+    "bert_bleu4": null,
+    "bert_bleu4_definition": "Unavailable because BERTScore was not computed."
   },
   "baseline_mean_seconds": 2.513
 }
