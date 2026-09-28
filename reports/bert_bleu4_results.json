@@ -1,0 +1,25 @@
+{
+  "formula": {
+    "P_n": "mean over r in R_n of max_{c in C_n} cos(E(r), E(c))",
+    "BERT_BLEU4": "LP * exp( (1/4) * sum_{n=1..4} log(P_n) )",
+    "LP": "exp( -alpha * |L_C - L_R| / L_R )",
+    "alpha": 0.5,
+    "bert_model": "bert-base-uncased"
+  },
+  "candidate_file": "lora_tuned_predictions.jsonl",
+  "candidate_metrics": {
+    "bert_bleu_1": 58.9275,
+    "bert_bleu_2": 53.6041,
+    "bert_bleu_3": 51.1501,
+    "bert_bleu_4": 50.1689,
+    "bert_bleu4_final": 50.1689
+  },
+  "baseline_file": "baseline_predictions.jsonl",
+  "baseline_metrics": {
+    "bert_bleu_1": 56.2847,
+    "bert_bleu_2": 50.6099,
+    "bert_bleu_3": 48.1035,
+    "bert_bleu_4": 47.1825,
+    "bert_bleu4_final": 47.1825
+  }
+}

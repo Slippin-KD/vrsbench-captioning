@@ -78,9 +78,38 @@ The experiment plan and the currently observed baseline are in
 will include its configuration, elapsed time, resource observations, training
 loss, and generated validation captions.
 
-The current five-image exploratory comparison reports BERTScore F1, BLEU-4,
-and the project-defined BERT-BLEU4 composite. See the experiment plan for its
-values, formula, and evaluation scope.
+### BERT-BLEU₄ metric
+
+Captioning quality is evaluated with **BERT-BLEU₄**, defined as:
+
+```
+P_n  =  (1/|R_n|) · Σ_{r ∈ R_n}  max_{c ∈ C_n}  cos(E(c), E(r))
+
+BERT-BLEU₄  =  LP · exp( ¼ · Σ_{n=1}^{4}  log P_n )
+
+LP  =  exp( −α · |L_C − L_R| / L_R ),   α = 0.5
+```
+
+where `E(x)` is the mean-pooled contextual BERT embedding of n-gram `x`
+(`bert-base-uncased`). This mirrors the standard BLEU formula but replaces
+exact n-gram matching with cosine similarity in BERT embedding space.
+
+To reproduce the scores:
+
+```bash
+python scripts/compute_bert_bleu4.py
+```
+
+Results are saved to `reports/bert_bleu4_results.json`.
+
+#### Current exploratory results (5-image pilot, 0–100 scale)
+
+| Metric        | Baseline | LoRA Tuned |
+|:--------------|--------:|----------:|
+| BERT-BLEU₁    |  56.28  |   58.93   |
+| BERT-BLEU₂    |  50.61  |   53.60   |
+| BERT-BLEU₃    |  48.10  |   51.15   |
+| **BERT-BLEU₄**| **47.18**| **50.17** |
 
 ## Repository layout
 

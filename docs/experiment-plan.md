@@ -12,13 +12,13 @@ Task 1 evaluation is centered on **training-time optimization, systematic ablati
 | **BLEU-1 to BLEU-4** | N-gram lexical precision (unigram to 4-gram) | Modified n-gram precision with brevity penalty & Chen-Cherry smoothing |
 | **ROUGE-L** | Structural sequence overlap | Longest Common Subsequence (LCS) F1-score |
 | **BERTScore F1** | Deep contextual / semantic similarity | Pairwise cosine similarity over contextual token embeddings |
-| **BERT-BLEU4** | Primary combined score | Geometric mean of BERTScore F1 and BLEU-4 after both are scaled to 0-100 |
+| **BERT-BLEU₁–₄** | Primary combined score | `LP · exp((1/n) · Σ log Pₙ)` where `Pₙ = mean max cosine similarity of BERT n-gram embeddings`; `LP = exp(-α·\|Lc-Lr\|/Lr)`, α=0.5 |
 | **Peak VRAM (MB)** | Memory footprint efficiency | `torch.cuda.max_memory_allocated()` |
 | **Throughput (samples/s)** | Wall-clock computational efficiency | Total processed dataset examples / total elapsed training time |
 
 Evaluation is executed via:
 ```bash
-python scripts/evaluate_metrics.py --candidate reports/optimized_predictions.jsonl --baseline reports/baseline_predictions.jsonl
+python scripts/compute_bert_bleu4.py
 ```
 
 ### Current exploratory comparison: baseline versus LoRA
@@ -28,20 +28,29 @@ The following comparison uses the five fixed validation images in
 It is an exploratory comparison for selecting the next full validation run;
 it is not a final score over all 9,350 validation images.
 
+BERT-BLEU scores are computed with `bert-base-uncased` using the formula:
+
+```
+P_n  =  (1/|R_n|) · Σ_{r ∈ R_n}  max_{c ∈ C_n}  cos(E(c), E(r))
+BERT-BLEUₙ  =  LP · exp( (1/n) · Σ_{i=1}^{n}  log Pᵢ )
+LP  =  exp( −α · |L_C − L_R| / L_R ),   α = 0.5
+```
+
 | Metric | BLIP baseline (B0) | LoRA tuned | Change |
 | :--- | ---: | ---: | ---: |
+| BLEU-1 | 6.58 | 10.96 | +4.38 |
+| BLEU-2 | 2.83 | 5.68 | +2.85 |
+| BLEU-3 | 1.05 | 2.10 | +1.05 |
 | BLEU-4 | 0.63 | 1.09 | +0.46 |
-| BERTScore precision | 24.69 | 36.01 | +11.32 |
-| BERTScore recall | 3.05 | 9.17 | +6.12 |
+| ROUGE-L | 14.43 | 22.95 | +8.52 |
 | BERTScore F1 | 13.67 | 22.31 | +8.64 |
-| **BERT-BLEU4** | **2.93** | **4.93** | **+2.00** |
-| Mean inference latency (seconds/image) | 2.51 | 0.45 | -2.06 |
+| BERT-BLEU₁ | 56.28 | 58.93 | +2.64 |
+| BERT-BLEU₂ | 50.61 | 53.60 | +2.99 |
+| BERT-BLEU₃ | 48.10 | 51.15 | +3.05 |
+| **BERT-BLEU₄** | **47.18** | **50.17** | **+2.99** |
+| Mean inference latency (s/image) | 2.51 | 0.45 | −2.06 |
 
-`BERT-BLEU4 = sqrt(BERTScore F1 x BLEU-4)`, with both input metrics on a
-0-100 scale. This project-defined composite balances semantic similarity with
-four-gram overlap. The BERTScore values are retained from the original
-evaluation run, and `scripts/evaluate_metrics.py` remains the reproducible
-path for future BERTScore calculations.
+Full results saved in `reports/bert_bleu4_results.json`.
 
 ---
 
